@@ -67,11 +67,17 @@ def copyfiles(fro, to, file="addfiles.txt", mode=0):
             else:
                 log("PATH " + compare + " -NOT FOUND-", file)
                 if mode == 1:
-                    os.mkdir(compare)
-                    log("Created " + compare, file)
+                    try:
+                        os.mkdir(compare)
+                        log("Created " + compare, file)
+                    except:
+                        log("FAILURE to create folder " + compare, file)
                 elif mode == -1:
-                    shutil.rmtree(current)
-                    log("Deleted " + current, file)
+                    try:
+                        shutil.rmtree(current)
+                        log("Deleted " + current, file)
+                    except:
+                        log("FAILURE to delete folder " + current, file)
 
         # check files in A
         for name in files:
@@ -90,21 +96,27 @@ def copyfiles(fro, to, file="addfiles.txt", mode=0):
                 # note differences in file size
                 if os.path.getsize(current) != os.path.getsize(compare):
                     log("    Difference found:", file)
-                    log("    " + current + str(os.path.getsize(current)), file)
-                    log("    " + compare + str(os.path.getsize(compare)), file)
+                    log("    " + current + " " + str(os.path.getsize(current)) + " bytes", file)
+                    log("    " + compare + " " + str(os.path.getsize(compare)) + " bytes", file)
 
             # copy missing files from A to B
             else:
                 log("FILE " + compare + " -NOT FOUND-", file)
                 if mode == 1:
                     log("Copying " + str(os.path.getsize(current)) + " bytes...", file)
-                    shutil.copy2(current, compare)
-                    log("Copied " + current + " to " + compare, file)
-                    count += os.path.getsize(current)
+                    try:
+                        shutil.copy2(current, compare)
+                        log("Copied " + current + " to " + compare, file)
+                        count += os.path.getsize(current)
+                    except:
+                        log("FAILURE to copy file " + current, file)
                 elif mode == -1:
                     log("Deleting " + str(os.path.getsize(current)) + " bytes...", file)
-                    os.remove(current)
-                    log("Deleted " + current, file)
+                    try:
+                        os.remove(current)
+                        log("Deleted " + current, file)
+                    except:
+                        log("FAILURE to delete file " + current, file)
 
     # return the difference in bytes
     return count
@@ -156,8 +168,8 @@ def pullfiles(fro, to, file="pullfiles.txt"):
     log("Took " + str(end - start) + " seconds", file)
 
 def main():
-    fro = "D:\\Red\\FMP\\"
-    to = "F:\\FMP\\"
+    fro = "D:\\location1\\"
+    to = "F:\\location2\\"
     castfiles(fro, to)
 
 # exempt files will be passed over
